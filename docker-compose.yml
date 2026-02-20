@@ -9,88 +9,48 @@ version: '3.8'
 # Key differences from official KoboldCpp:
 #   - Modified horde integration for Charluv services
 #   - Custom API endpoints optimized for Charluv
-#   - Specialized configuration for Charluv backend
 #
 # For official KoboldCpp: https://hub.docker.com/r/koboldai/koboldcpp
 # For Charluv: https://charluv.com
+#
+# Designed for RunPod NVIDIA GPU deployment.
+# Requires nvidia-container-toolkit on the host.
 # ============================================================================
 
 services:
-  # CPU-only deployment (default)
-  koboldcpp-cpu:
+  koboldcpp:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: default
     container_name: koboldcpp
     ports:
       - "5001:5001"
     volumes:
-      # Mount local models directory
       - ./models:/models
-      # Mount LoRA adapters directory
       - ./models/loras:/models/loras
-      # Persistent data storage
       - ./data:/data
     environment:
-      # Model configuration
-      # Option 1: Mount a local model file (recommended)
+      # Model: mount a local file or set MODEL_URL to download on first run
       - KOBOLDCPP_MODEL=/models/model.gguf
-
-      # Option 2: Download model from URL on first run
-      # - KOBOLDCPP_MODEL_URL=https://huggingface.co/bartowski/L3-8B-Stheno-v3.2-GGUF/resolve/main/L3-8B-Stheno-v3.2-Q4_K_S.gguf
+      # - KOBOLDCPP_MODEL_URL=https://huggingface.co/.../model.gguf
       # - KOBOLDCPP_MODEL_URL_FILENAME=/models/model.gguf
 
-      # Server configuration
-      - KOBOLDCPP_HOST=0.0.0.0
-      - KOBOLDCPP_PORT=5001
-      - KOBOLDCPP_CONTEXT_SIZE=8192
-      - KOBOLDCPP_THREADS=0  # 0 = auto-detect
-      - KOBOLDCPP_QUIET=true
-
-      # GPU configuration (leave empty for CPU)
-      - KOBOLDCPP_USE_GPU=
-      - KOBOLDCPP_GPU_LAYERS=0
-
-      # LoRA configuration (optional)
-      # Text LoRA for LLM models - can specify multiple separated by "|"
-      - KOBOLDCPP_LORA=
-      - KOBOLDCPP_LORA_MULT=1.0
-      # Image LoRA for Stable Diffusion - can specify multiple separated by "|"
-      - KOBOLDCPP_SDLORA=
-      - KOBOLDCPP_SDLORA_MULT=1.0
-    restart: unless-stopped
-    profiles:
-      - cpu
-
-  # NVIDIA CUDA deployment
-  koboldcpp-cuda:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: cuda
-        BASE_IMAGE: nvidia/cuda:12.1.1-runtime-ubuntu22.04
-    container_name: koboldcpp-cuda
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./models:/models
-      - ./models/loras:/models/loras
-      - ./data:/data
-    environment:
-      - KOBOLDCPP_MODEL=/models/model.gguf
       - KOBOLDCPP_HOST=0.0.0.0
       - KOBOLDCPP_PORT=5001
       - KOBOLDCPP_CONTEXT_SIZE=8192
       - KOBOLDCPP_THREADS=0
       - KOBOLDCPP_QUIET=true
 
-      # GPU configuration
+      # GPU - always CUDA on RunPod
       - KOBOLDCPP_USE_GPU=cuda
-      - KOBOLDCPP_GPU_LAYERS=-1  # -1 = auto (offload all possible layers)
+      - KOBOLDCPP_GPU_LAYERS=-1
       - CUDA_VISIBLE_DEVICES=0
+
+      # LoRA (optional) - pipe-separate multiple files
+      - KOBOLDCPP_LORA=
+      - KOBOLDCPP_LORA_MULT=1.0
+      - KOBOLDCPP_SDLORA=
+      - KOBOLDCPP_SDLORA_MULT=1.0
     deploy:
       resources:
         reservations:
@@ -99,108 +59,3 @@ services:
               count: 1
               capabilities: [gpu]
     restart: unless-stopped
-    profiles:
-      - cuda
-
-  # Vulkan deployment (works with NVIDIA, AMD, Intel)
-  koboldcpp-vulkan:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: vulkan
-    container_name: koboldcpp-vulkan
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./models:/models
-      - ./models/loras:/models/loras
-      - ./data:/data
-      # Vulkan ICD files
-      - /usr/share/vulkan/icd.d:/usr/share/vulkan/icd.d:ro
-      - /etc/vulkan/icd.d:/etc/vulkan/icd.d:ro
-    devices:
-      - /dev/dri:/dev/dri  # GPU device access
-    environment:
-      - KOBOLDCPP_MODEL=/models/model.gguf
-      - KOBOLDCPP_HOST=0.0.0.0
-      - KOBOLDCPP_PORT=5001
-      - KOBOLDCPP_CONTEXT_SIZE=8192
-      - KOBOLDCPP_THREADS=0
-      - KOBOLDCPP_QUIET=true
-
-      # GPU configuration
-      - KOBOLDCPP_USE_GPU=vulkan
-      - KOBOLDCPP_GPU_LAYERS=-1
-    restart: unless-stopped
-    profiles:
-      - vulkan
-
-  # AMD ROCm deployment
-  koboldcpp-rocm:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: hipblas
-        BASE_IMAGE: rocm/dev-ubuntu-22.04:7.1
-    container_name: koboldcpp-rocm
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./models:/models
-      - ./models/loras:/models/loras
-      - ./data:/data
-    devices:
-      - /dev/kfd:/dev/kfd
-      - /dev/dri:/dev/dri
-    environment:
-      - KOBOLDCPP_MODEL=/models/model.gguf
-      - KOBOLDCPP_HOST=0.0.0.0
-      - KOBOLDCPP_PORT=5001
-      - KOBOLDCPP_CONTEXT_SIZE=8192
-      - KOBOLDCPP_THREADS=0
-      - KOBOLDCPP_QUIET=true
-
-      # GPU configuration
-      - KOBOLDCPP_USE_GPU=rocm
-      - KOBOLDCPP_GPU_LAYERS=-1
-      - HIP_VISIBLE_DEVICES=0
-    restart: unless-stopped
-    profiles:
-      - rocm
-
-# Volumes for persistent data
-volumes:
-  models:
-    driver: local
-  data:
-    driver: local
-
-# Usage Examples:
-#
-# ⚠️  IMPORTANT: This is a CHARLUV FORK with modified horde integration
-# For official KoboldCpp, see: https://hub.docker.com/r/koboldai/koboldcpp
-# For Charluv documentation, see: DOCKER_CHARLUV.md
-#
-# CPU deployment:
-#   docker-compose --profile cpu up -d
-#
-# NVIDIA CUDA deployment:
-#   docker-compose --profile cuda up -d
-#
-# Vulkan deployment (any GPU):
-#   docker-compose --profile vulkan up -d
-#
-# AMD ROCm deployment:
-#   docker-compose --profile rocm up -d
-#
-# Access the UI:
-#   http://localhost:5001
-#
-# Standard API endpoints:
-#   http://localhost:5001/api
-#
-# Charluv-specific endpoints:
-#   http://localhost:5001/api/charluv/horde/status
-#   http://localhost:5001/api/charluv/metrics

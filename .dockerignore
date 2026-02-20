@@ -20,7 +20,6 @@ docker-compose.yml
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
 .Python
 build/
 develop-eggs/
@@ -91,14 +90,14 @@ data/
 *.txt.old
 version_template.txt
 
-# Build artifacts (will be rebuilt in container)
+# Build artifacts not needed in container
 *.dll
 *.exe
 *.o
 *.a
-koboldcpp_*.so
 simplecpuinfo
 simplecpuinfo.exe
+# koboldcpp_*.so are intentionally NOT excluded - they are the pre-built libraries
 
 # Temporary files
 *.tmp
@@ -141,5 +140,4 @@ tools/mtmd/tests.sh
 tools/gguf-split/tests.sh
 
 # Version control
-build-info.h
 version.txt
