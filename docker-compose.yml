@@ -46,11 +46,22 @@ services:
       - KOBOLDCPP_GPU_LAYERS=-1
       - CUDA_VISIBLE_DEVICES=0
 
-      # LoRA (optional) - pipe-separate multiple files
+      # LoRA (optional) - use URL to download on first run, or pipe-separate local paths
       - KOBOLDCPP_LORA=
+      - KOBOLDCPP_LORA_URL=
+      - KOBOLDCPP_LORA_URL_FILENAME=/models/loras/lora.gguf
       - KOBOLDCPP_LORA_MULT=1.0
       - KOBOLDCPP_SDLORA=
+      - KOBOLDCPP_SDLORA_URL=
+      - KOBOLDCPP_SDLORA_URL_FILENAME=/models/loras/sdlora.safetensors
       - KOBOLDCPP_SDLORA_MULT=1.0
+
+      # Charluv horde
+      - CHARLUV_HORDE_KEY=
+      - CHARLUV_HORDE_WORKER_NAME=
+      - CHARLUV_HORDE_MODEL_NAME=
+      - CHARLUV_HORDE_MAX_CTX=0
+      - CHARLUV_HORDE_GEN_LEN=0
     deploy:
       resources:
         reservations:

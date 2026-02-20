@@ -123,12 +123,46 @@ if [ "$KOBOLDCPP_QUIET" = "true" ] || [ "$KOBOLDCPP_QUIET" = "1" ]; then
     ARGS+=("--quiet")
 fi
 
+# LoRA download from URL
+if [ -n "$KOBOLDCPP_LORA_URL" ]; then
+    LORA_FILENAME="${KOBOLDCPP_LORA_URL_FILENAME:-/models/loras/lora.gguf}"
+    if [ ! -f "$LORA_FILENAME" ]; then
+        echo "Text LoRA not found at $LORA_FILENAME, downloading..."
+        mkdir -p "$(dirname "$LORA_FILENAME")"
+        curl -L -C - -o "$LORA_FILENAME" "$KOBOLDCPP_LORA_URL" || {
+            echo "Error: Failed to download LoRA from $KOBOLDCPP_LORA_URL"
+            exit 1
+        }
+        echo "LoRA downloaded: $LORA_FILENAME"
+    else
+        echo "Text LoRA already exists at $LORA_FILENAME, skipping download"
+    fi
+    # Prepend to KOBOLDCPP_LORA so it gets picked up below
+    KOBOLDCPP_LORA="${LORA_FILENAME}${KOBOLDCPP_LORA:+|$KOBOLDCPP_LORA}"
+fi
+
+# SD LoRA download from URL
+if [ -n "$KOBOLDCPP_SDLORA_URL" ]; then
+    SDLORA_FILENAME="${KOBOLDCPP_SDLORA_URL_FILENAME:-/models/loras/sdlora.safetensors}"
+    if [ ! -f "$SDLORA_FILENAME" ]; then
+        echo "SD LoRA not found at $SDLORA_FILENAME, downloading..."
+        mkdir -p "$(dirname "$SDLORA_FILENAME")"
+        curl -L -C - -o "$SDLORA_FILENAME" "$KOBOLDCPP_SDLORA_URL" || {
+            echo "Error: Failed to download SD LoRA from $KOBOLDCPP_SDLORA_URL"
+            exit 1
+        }
+        echo "SD LoRA downloaded: $SDLORA_FILENAME"
+    else
+        echo "SD LoRA already exists at $SDLORA_FILENAME, skipping download"
+    fi
+    KOBOLDCPP_SDLORA="${SDLORA_FILENAME}${KOBOLDCPP_SDLORA:+|$KOBOLDCPP_SDLORA}"
+fi
+
 # LoRA configuration
 if [ -n "$KOBOLDCPP_LORA" ]; then
-    # Split pipe-separated LoRA files and add each one
     IFS='|' read -ra LORA_FILES <<< "$KOBOLDCPP_LORA"
     for lora_file in "${LORA_FILES[@]}"; do
-        lora_file=$(echo "$lora_file" | xargs) # trim whitespace
+        lora_file=$(echo "$lora_file" | xargs)
         if [ -f "$lora_file" ]; then
             ARGS+=("--lora" "$lora_file")
             echo "Text LoRA: $lora_file"
@@ -136,8 +170,6 @@ if [ -n "$KOBOLDCPP_LORA" ]; then
             echo "Warning: LoRA file not found: $lora_file"
         fi
     done
-
-    # LoRA multiplier
     if [ -n "$KOBOLDCPP_LORA_MULT" ] && [ "$KOBOLDCPP_LORA_MULT" != "1.0" ]; then
         ARGS+=("--loramult" "$KOBOLDCPP_LORA_MULT")
         echo "Text LoRA Multiplier: $KOBOLDCPP_LORA_MULT"
@@ -146,10 +178,9 @@ fi
 
 # SD LoRA configuration
 if [ -n "$KOBOLDCPP_SDLORA" ]; then
-    # Split pipe-separated SD LoRA files and add each one
     IFS='|' read -ra SDLORA_FILES <<< "$KOBOLDCPP_SDLORA"
     for sdlora_file in "${SDLORA_FILES[@]}"; do
-        sdlora_file=$(echo "$sdlora_file" | xargs) # trim whitespace
+        sdlora_file=$(echo "$sdlora_file" | xargs)
         if [ -f "$sdlora_file" ]; then
             ARGS+=("--sdlora" "$sdlora_file")
             echo "SD LoRA: $sdlora_file"
@@ -157,12 +188,29 @@ if [ -n "$KOBOLDCPP_SDLORA" ]; then
             echo "Warning: SD LoRA file not found: $sdlora_file"
         fi
     done
-
-    # SD LoRA multiplier
     if [ -n "$KOBOLDCPP_SDLORA_MULT" ] && [ "$KOBOLDCPP_SDLORA_MULT" != "1.0" ]; then
         ARGS+=("--sdloramult" "$KOBOLDCPP_SDLORA_MULT")
         echo "SD LoRA Multiplier: $KOBOLDCPP_SDLORA_MULT"
     fi
+fi
+
+# Charluv horde configuration
+if [ -n "$CHARLUV_HORDE_KEY" ]; then
+    ARGS+=("--hordekey" "$CHARLUV_HORDE_KEY")
+    echo "Horde: enabled"
+fi
+if [ -n "$CHARLUV_HORDE_WORKER_NAME" ]; then
+    ARGS+=("--hordeworkername" "$CHARLUV_HORDE_WORKER_NAME")
+    echo "Horde Worker: $CHARLUV_HORDE_WORKER_NAME"
+fi
+if [ -n "$CHARLUV_HORDE_MODEL_NAME" ]; then
+    ARGS+=("--hordemodelname" "$CHARLUV_HORDE_MODEL_NAME")
+fi
+if [ -n "$CHARLUV_HORDE_MAX_CTX" ] && [ "$CHARLUV_HORDE_MAX_CTX" -gt 0 ]; then
+    ARGS+=("--hordemaxctx" "$CHARLUV_HORDE_MAX_CTX")
+fi
+if [ -n "$CHARLUV_HORDE_GEN_LEN" ] && [ "$CHARLUV_HORDE_GEN_LEN" -gt 0 ]; then
+    ARGS+=("--hordegenlen" "$CHARLUV_HORDE_GEN_LEN")
 fi
 
 # Add any additional arguments passed to docker run
@@ -182,6 +230,8 @@ echo "GPU: ${KOBOLDCPP_USE_GPU:-CPU only}"
 [ "$KOBOLDCPP_GPU_LAYERS" -ne 0 ] && echo "GPU Layers: $KOBOLDCPP_GPU_LAYERS"
 [ -n "$KOBOLDCPP_LORA" ] && echo "Text LoRA: Enabled (multiplier: ${KOBOLDCPP_LORA_MULT:-1.0})"
 [ -n "$KOBOLDCPP_SDLORA" ] && echo "SD LoRA: Enabled (multiplier: ${KOBOLDCPP_SDLORA_MULT:-1.0})"
+[ -n "$CHARLUV_HORDE_KEY" ] && echo "Horde Key: set" || echo "Horde Key: not set"
+[ -n "$CHARLUV_HORDE_WORKER_NAME" ] && echo "Horde Worker: $CHARLUV_HORDE_WORKER_NAME"
 echo "==================================="
 echo ""
 
