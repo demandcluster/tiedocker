@@ -1,0 +1,146 @@
+# Git files
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Documentation
+*.md
+!LICENSE.md
+!MIT_LICENSE_GGML_SDCPP_LLAMACPP_ONLY.md
+docs/
+media/
+
+# Docker files (don't include in build context)
+Dockerfile
+docker-compose.yml
+.dockerignore
+docker-entrypoint.sh
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# PyInstaller files
+*.spec
+dist/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.cursor/
+.cursorrules
+
+# Test and CI files
+tests/
+.pytest_cache/
+.coverage
+.tox/
+.nox/
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Conda environment
+conda/
+bin/micromamba
+environment*.yaml
+
+# Model files (these should be mounted as volumes)
+models/
+*.gguf
+*.ggml
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Data and output files
+data/
+*.log
+*.txt.old
+version_template.txt
+
+# Build artifacts (will be rebuilt in container)
+*.dll
+*.exe
+*.o
+*.a
+koboldcpp_*.so
+simplecpuinfo
+simplecpuinfo.exe
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+.cache/
+
+# OS specific
+Thumbs.db
+desktop.ini
+
+# Colab notebook
+colab.ipynb
+
+# Scripts not needed in container
+Remote-Link.cmd
+create_ver_file.bat
+create_ver_file.sh
+make_pyinstaller.bat
+make_pyinstaller.sh
+koboldcpp.sh
+android_install.sh
+download-model.sh
+
+# Windows specific
+aria2c-win.exe
+cudart64_*.dll
+glslc.exe
+niko.ico
+nikogreen.ico
+
+# Linux specific
+glslc-linux
+
+# Example files and tools
+examples/
+tools/server/
+tools/quantize/tests.sh
+tools/mtmd/tests.sh
+tools/gguf-split/tests.sh
+
+# Version control
+build-info.h
+version.txt

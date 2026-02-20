@@ -1,0 +1,42 @@
+================================================================================
+                    IMPORTANT - CHARLUV FORK NOTICE
+================================================================================
+
+This is a CHARLUV-SPECIALIZED FORK of KoboldCpp with modified horde integration.
+
+⚠️  THIS IS NOT THE OFFICIAL KOBOLDCPP REPOSITORY ⚠️
+
+Key Differences:
+  • Modified horde integration for Charluv services (NOT AI Horde)
+  • Custom API endpoints optimized for Charluv backend
+  • Specialized worker configuration for Charluv infrastructure
+
+Official KoboldCpp Resources:
+  • Repository:  https://github.com/LostRuins/koboldcpp
+  • Docker Hub:  https://hub.docker.com/r/koboldai/koboldcpp
+  • Wiki:        https://github.com/LostRuins/koboldcpp/wiki
+
+Charluv Resources:
+  • Platform:    https://charluv.com
+  • This Fork:   For Charluv backend deployments only
+
+Documentation:
+  • README_DOCKER.md      - Start here for Docker deployment
+  • DOCKER_CHARLUV.md     - Charluv-specific configuration
+  • DOCKER.md             - General Docker usage guide
+  • LORA.md               - LoRA adapter configuration
+  • CLAUDE.md             - Developer documentation
+
+When to Use This Fork:
+  ✓ Deploying KoboldCpp for Charluv infrastructure
+  ✓ Running Charluv horde workers
+  ✓ Part of Charluv development team
+
+When NOT to Use This Fork:
+  ✗ General KoboldCpp usage
+  ✗ AI Horde integration
+  ✗ Need official KoboldCpp support
+
+License: AGPL v3.0 (same as KoboldCpp)
+
+================================================================================

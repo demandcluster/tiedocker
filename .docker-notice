@@ -1,0 +1,7 @@
+⚠️  CHARLUV FORK NOTICE ⚠️
+
+This Docker setup is for a Charluv-specialized fork of KoboldCpp.
+It uses Charluv Horde, not AI Horde.
+
+For official KoboldCpp: https://hub.docker.com/r/koboldai/koboldcpp
+For this fork: See README_DOCKER.md and DOCKER_CHARLUV.md
