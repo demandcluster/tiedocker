@@ -15,7 +15,6 @@ media/
 Dockerfile
 docker-compose.yml
 .dockerignore
-docker-entrypoint.sh
 
 # Python cache and virtual environments
 __pycache__/

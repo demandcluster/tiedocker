@@ -7,7 +7,7 @@
 # Supports CPU, CUDA, and Vulkan acceleration
 
 ARG BASE_IMAGE=python:3.11-slim-bullseye
-FROM ${BASE_IMAGE} as builder
+FROM ${BASE_IMAGE} AS builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
