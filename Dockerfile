@@ -7,8 +7,8 @@
 # Requires koboldcpp_cublas.so in the repo directory:
 #   make LLAMA_CUBLAS=1 LLAMA_PORTABLE=1
 
-ARG CUDA_VERSION=12.1.1
-FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu22.04
+ARG CUDA_VERSION=12.6.3
+FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu24.04
 
 # Install Python and runtime dependencies
 RUN apt-get update && apt-get install -y \
