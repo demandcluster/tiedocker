@@ -49,11 +49,18 @@ if [ -n "$KOBOLDCPP_MODEL_URL" ]; then
 elif [ -n "$KOBOLDCPP_MODEL" ]; then
     # Use specified model path
     if [ ! -f "$KOBOLDCPP_MODEL" ]; then
-        echo "Error: Model file not found at $KOBOLDCPP_MODEL"
-        echo "Please mount a model file or set KOBOLDCPP_MODEL_URL to download one"
-        exit 1
+        echo "Warning: Model not found at $KOBOLDCPP_MODEL, searching /models for any .gguf..."
+        if ls /models/*.gguf 1> /dev/null 2>&1; then
+            MODEL_PATH=$(ls /models/*.gguf | head -n 1)
+            echo "Found model: $MODEL_PATH"
+        else
+            echo "Error: No .gguf files found in /models"
+            echo "Please mount a model or set KOBOLDCPP_MODEL_URL"
+            exit 1
+        fi
+    else
+        MODEL_PATH="$KOBOLDCPP_MODEL"
     fi
-    MODEL_PATH="$KOBOLDCPP_MODEL"
 else
     # Look for default model in /models directory
     if ls /models/*.gguf 1> /dev/null 2>&1; then

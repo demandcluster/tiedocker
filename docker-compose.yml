@@ -31,7 +31,8 @@ services:
       - ./data:/data
     environment:
       # Model: mount a local file or set MODEL_URL to download on first run
-      - KOBOLDCPP_MODEL=/models/model.gguf
+      # Leave KOBOLDCPP_MODEL empty to auto-discover any .gguf in /models
+      - KOBOLDCPP_MODEL=
       # - KOBOLDCPP_MODEL_URL=https://huggingface.co/.../model.gguf
       # - KOBOLDCPP_MODEL_URL_FILENAME=/models/model.gguf
 
