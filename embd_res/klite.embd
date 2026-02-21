@@ -15217,7 +15217,7 @@ Current version indicated by LITEVER below.
 						if(uname.toLowerCase()=="anonymous#0")
 						{
 							document.getElementById("kudos_bal").innerHTML = uname + "<br>"+
-							"<a class='color_blueurl' target='_blank' href='https://aihorde.net/register'>(Register New User)</a>";
+							"<a class='color_blueurl' target='_blank' href='https://horde.aivo.chat/register'>(Register New User)</a>";
 						}else{
 							document.getElementById("showownworkerslink").classList.remove("hidden");
 						}
@@ -15227,12 +15227,12 @@ Current version indicated by LITEVER below.
 					}
 				}
 				else {
-					document.getElementById("kudos_bal").innerHTML = "API Key Error<br><a class='color_blueurl' target='_blank' href='https://aihorde.net/register'>(Register New User)</a>";
+					document.getElementById("kudos_bal").innerHTML = "API Key Error<br><a class='color_blueurl' target='_blank' href='https://horde.aivo.chat/register'>(Register New User)</a>";
 				}
 			})
 			.catch((error) => {
 				console.log("Error: " + error);
-				document.getElementById("kudos_bal").innerHTML = "API Key Error<br><a class='color_blueurl' target='_blank' href='https://aihorde.net/register'>(Register New User)</a>";
+				document.getElementById("kudos_bal").innerHTML = "API Key Error<br><a class='color_blueurl' target='_blank' href='https://horde.aivo.chat/register'>(Register New User)</a>";
 			});
 		}
 	}
@@ -30584,11 +30584,11 @@ Current version indicated by LITEVER below.
 					<span style="float:left; text-align: left;">
 					Your AI Horde API Key <span class="helpicon">?
 						<span class="helptext">You need an API key to use AI Horde to generate text. Get one at
-							https://aihorde.net/register or use the anonymous key 0000000000.</span>
+							https://horde.aivo.chat/register or use the anonymous key 0000000000.</span>
 					</span>
 					<br><a href="#" id="showownworkerslink" class="color_blueurl hidden" onclick="show_my_own_workers()">[Manage My Workers]</a></span>
 					<span class="color_green" style="float:right; text-align: right;" id="kudos_bal">
-						Need a Key?<br><a class='color_blueurl' target='_blank' href='https://aihorde.net/register'>(Register New User)</a>
+						Need a Key?<br><a class='color_blueurl' target='_blank' href='https://horde.aivo.chat/register'>(Register New User)</a>
 					</span>
 				</div>
 				<input class="form-control" type="password" placeholder="Enter API Key (or use 0000000000)" value=""
