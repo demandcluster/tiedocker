@@ -31,7 +31,7 @@ COPY embd_res/ ./embd_res/
 COPY LICENSE.md .
 COPY MIT_LICENSE_GGML_SDCPP_LLAMACPP_ONLY.md .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 RUN mkdir -p /models /models/loras /data
 
